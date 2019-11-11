@@ -14,8 +14,12 @@ public class OutputView {
         printStream.println(String.format("숫자를 입력하세요(%s로 구분)", separator));
     }
 
-    public void showCheckResult(int strike, int ball) {
+    public void printCheckResult(int strike, int ball) {
         printStream.println(String.format("%d 스트라이크, %d 볼", strike, ball));
+    }
+
+    public void printEndWithWin() {
+        printStream.println("정답입니다!");
     }
 
     public void printError(Throwable e) {

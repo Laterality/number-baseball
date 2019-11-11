@@ -1,7 +1,10 @@
 package kr.latera.baseball.domain;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static kr.latera.baseball.domain.BaseballNumbers.NUMS_LENGTH;
 
@@ -26,6 +29,10 @@ public class BaseballEngine {
     }
 
     public CheckResult check(int... input) {
+        return check(Arrays.stream(input).boxed().collect(Collectors.toList()));
+    }
+
+    public CheckResult check(Collection<Integer> input) {
         BaseballNumbers other = new BaseballNumbers(input);
         return CheckResult.from(answer.countStrike(other), answer.countBall(other));
     }
