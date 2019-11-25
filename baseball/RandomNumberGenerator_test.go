@@ -8,7 +8,7 @@ func TestGenerate(t *testing.T) {
 	min := 2
 	max := 10
 	loop := 1000
-	generator := RandomNumberGenerator{min: min, max: max}
+	generator := randomNumberGenerator{min: min, max: max}
 	minPresent := false
 	maxPresent := false
 

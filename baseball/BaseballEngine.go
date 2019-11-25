@@ -3,9 +3,9 @@ package baseball
 // Engine creates answer and proceeds client inputs
 type Engine interface {
 	// start initializes game state
-	start()
+	Start()
 	// input checks number of strike and ball with argument
-	input([]int) (int, int)
+	Input([]int) (int, int, error)
 }
 
 // NumberGenerator is interface for generate number to make answer
@@ -18,19 +18,6 @@ type baseballEngine struct {
 	answer    numbers
 }
 
-type numbers struct {
-	nums []int
-}
-
-const (
-	// NumberLength is length of input number slices
-	NumberLength = 3
-	// NumberMin is the minimum value of baseball number
-	NumberMin = 1
-	// NumberMax is the maximum value of baseball number
-	NumberMax = 9
-)
-
 // CreateBaseballEngine constructs instance of baeball engine implementation
 func CreateBaseballEngine(generator NumberGenerator) Engine {
 	engine := new(baseballEngine)
@@ -38,7 +25,7 @@ func CreateBaseballEngine(generator NumberGenerator) Engine {
 	return engine
 }
 
-func (E *baseballEngine) start() {
+func (E *baseballEngine) Start() {
 	E.answer.nums = make([]int, NumberLength)
 	nums := &E.answer.nums
 	idx := 0
@@ -60,32 +47,13 @@ func indexOf(nums []int, target int) int {
 	return -1
 }
 
-func (E *baseballEngine) input(nums []int) (strike int, ball int) {
-	input := numbers{nums}
-	strike = E.answer.countStrike(&input)
-	ball = E.answer.countBall(&input)
-
-	return
-}
-
-func (N *numbers) countStrike(other *numbers) (strike int) {
-	strike = 0
-	for idx := range other.nums {
-		if N.nums[idx] == other.nums[idx] {
-			strike++
-		}
+func (E *baseballEngine) Input(nums []int) (strike int, ball int, err error) {
+	input, err := newBaseballNumbers(nums)
+	if err != nil {
+		return
 	}
-	return
-}
+	strike = E.answer.countStrike(input)
+	ball = E.answer.countBall(input)
 
-func (N *numbers) countBall(other *numbers) (ball int) {
-	ball = 0
-	for idx, num := range N.nums {
-		for otherIdx, otherNum := range other.nums {
-			if idx != otherIdx && num == otherNum {
-				ball++
-			}
-		}
-	}
 	return
 }

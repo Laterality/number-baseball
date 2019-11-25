@@ -1,6 +1,9 @@
 package baseball
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 // TestNumberGenerator implements NumberGenerator only for test
 type TestNumberGenerator struct {
@@ -25,8 +28,8 @@ func NewTestNumberGenerator(nums []int) *TestNumberGenerator {
 
 func TestGame(t *testing.T) {
 	engine := CreateBaseballEngine(NewTestNumberGenerator([]int{1, 2, 3}))
-	engine.start()
-	strike, ball := engine.input([]int{1, 3, 2})
+	engine.Start()
+	strike, ball, _ := engine.Input([]int{1, 3, 2})
 	strikeExpected := 1
 	ballExpected := 2
 	if strike != strikeExpected {
@@ -39,9 +42,52 @@ func TestGame(t *testing.T) {
 
 func TestNoDuplicateNumberWithinAnswer(t *testing.T) {
 	engine := CreateBaseballEngine(NewTestNumberGenerator([]int{1, 1, 2, 2, 2, 1, 4}))
-	engine.start()
-	strike, _ := engine.input([]int{1, 2, 4})
+	engine.Start()
+	strike, _, _ := engine.Input([]int{1, 2, 4})
 	if strike != 3 {
 		t.Error("Duplicate number is in answer")
+	}
+}
+
+func TestInvalidNumber(t *testing.T) {
+	engine := CreateBaseballEngine(NewTestNumberGenerator([]int{1, 2, 3}))
+	engine.Start()
+	_, _, err := engine.Input([]int{0, 1, 2})
+	if err == nil {
+		t.Error("Error is not occurred on invalid number")
+		return
+	}
+	if err.Error() != "Invalid number: 0" {
+		t.Errorf("Another error occurred: %v", err)
+	}
+}
+
+func TestInvalidLength(t *testing.T) {
+	engine := CreateBaseballEngine(NewTestNumberGenerator([]int{1, 2, 3}))
+	engine.Start()
+	_, _, err := engine.Input([]int{1, 2})
+
+	if err == nil {
+		t.Error("Error is not occurred on invalid lnegth of numbers")
+		return
+	}
+
+	if reflect.TypeOf(err) != reflect.TypeOf(*new(InvalidBaseballNumbersLengthError)) {
+		t.Errorf("Another error occurred: %v", err)
+	}
+}
+
+func TestDuplicateNumbers(t *testing.T) {
+	engine := CreateBaseballEngine(NewTestNumberGenerator([]int{1, 2, 3}))
+	engine.Start()
+	_, _, err := engine.Input([]int{1, 2, 2})
+
+	if err == nil {
+		t.Error("Error is not occurred on invalid lnegth of numbers")
+		return
+	}
+
+	if reflect.TypeOf(err) != reflect.TypeOf(*new(DuplicateBaseballNumberError)) {
+		t.Errorf("Another error occurred: %v", err)
 	}
 }
